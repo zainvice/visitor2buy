@@ -1,265 +1,282 @@
-# BooknMove Frontend
+# Visitor2Buy Frontend
 
-A modern React frontend for the BooknMove platform - connecting customers with verified local movers.
+A modern, responsive React application for the Visitor2Buy customer engagement platform. Built with Vite, React 19, Tailwind CSS, and TypeScript.
 
-## 🚀 Quick Start
+## 🚀 Features
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn
+### Core Features
+- **Authentication System** - Login, register, password reset with JWT
+- **Dashboard Layout** - Responsive sidebar navigation with user management
+- **Project Management** - Create and manage website projects with embed codes
+- **Widget Editor** - Advanced WYSIWYG editor with real-time preview
+- **Analytics Dashboard** - Comprehensive charts and metrics with Recharts
+- **Billing Integration** - Stripe-powered subscription management
+- **Admin Panel** - User management and system analytics (admin only)
 
-### Installation
+### UI/UX Features
+- **Responsive Design** - Mobile-first approach with Tailwind CSS
+- **Smooth Animations** - Framer Motion for delightful interactions
+- **Modern Components** - Clean, accessible UI components
+- **Real-time Updates** - Live data updates and notifications
+- **Dark Mode Ready** - Prepared for dark mode implementation
 
-1. **Install dependencies**
+### Technical Features
+- **State Management** - Zustand for global state management
+- **Form Handling** - React Hook Form with validation
+- **API Integration** - Axios with interceptors and error handling
+- **Type Safety** - TypeScript for better development experience
+- **Performance** - Code splitting and lazy loading
+
+## 📦 Tech Stack
+
+- **Framework**: React 19 with Vite
+- **Styling**: Tailwind CSS with custom components
+- **State Management**: Zustand with persistence
+- **Forms**: React Hook Form with validation
+- **Charts**: Recharts for analytics visualization
+- **Animations**: Framer Motion for smooth transitions
+- **Icons**: Lucide React icons
+- **HTTP Client**: Axios with interceptors
+- **Payments**: Stripe React integration
+- **Notifications**: React Hot Toast
+
+## 🛠️ Installation
+
+1. **Install Dependencies**
    ```bash
    npm install
    ```
 
 2. **Environment Setup**
    ```bash
-   cp env.example .env
+   cp .env.example .env
    ```
    
-   Update `.env` with your configurations:
+   Configure your environment variables:
    ```env
    VITE_API_URL=http://localhost:5000/api
-   VITE_APP_NAME=BooknMove
-   VITE_APP_VERSION=1.0.0
-   NODE_ENV=development
+   VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_key
    ```
 
-3. **Start the development server**
+3. **Start Development Server**
    ```bash
    npm run dev
    ```
 
-4. **Visit the application**
-   Open: `http://localhost:8080`
+4. **Build for Production**
+   ```bash
+   npm run build
+   ```
 
-## 📋 Tech Stack
-
-- **React 19** - Frontend framework
-- **Vite** - Build tool and dev server
-- **React Router** - Client-side routing
-- **TailwindCSS** - Styling framework
-- **Axios** - HTTP client
-- **React Icons** - Icon library
-- **Framer Motion** - Animation library
-
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```
-booknmove-fe/
-├── public/                 # Static assets
-├── src/
-│   ├── components/         # Reusable UI components
-│   │   ├── Header.jsx      # Navigation header
-│   │   ├── Footer.jsx      # Site footer
-│   │   ├── Hero.jsx        # Landing page hero
-│   │   ├── Features.jsx    # Features section
-│   │   ├── ProtectedRoute.jsx # Auth-protected routes
-│   │   └── ...
-│   ├── pages/              # Page components
-│   │   ├── Home.jsx        # Landing page
-│   │   ├── Login.jsx       # User login
-│   │   ├── Register.jsx    # User registration
-│   │   ├── Dashboard.jsx   # Customer dashboard
-│   │   ├── SearchMovers.jsx # Mover search page
-│   │   └── ...
-│   ├── contexts/           # React contexts
-│   │   └── AuthContext.jsx # Authentication context
-│   ├── services/           # API services
-│   │   ├── api.js          # Axios configuration
-│   │   ├── auth.js         # Authentication API
-│   │   ├── movers.js       # Movers API
-│   │   ├── bookings.js     # Bookings API
-│   │   ├── reviews.js      # Reviews API
-│   │   └── index.js        # Service utilities
-│   ├── hooks/              # Custom React hooks
-│   ├── utils/              # Utility functions
-│   ├── App.jsx             # Main app component
-│   ├── main.jsx            # App entry point
-│   └── index.css           # Global styles
-├── tailwind.config.js      # Tailwind configuration
-├── vite.config.js          # Vite configuration
-└── package.json
+src/
+├── components/           # Reusable UI components
+│   ├── auth/            # Authentication components
+│   └── layout/          # Layout components
+├── pages/               # Route components
+│   ├── Dashboard.jsx    # Main dashboard
+│   ├── Projects.jsx     # Project management
+│   ├── Widgets.jsx      # Widget listing
+│   ├── WidgetEditor.jsx # Widget creation/editing
+│   ├── Analytics.jsx    # Analytics dashboard
+│   ├── Settings.jsx     # User settings
+│   ├── Billing.jsx      # Subscription management
+│   └── AdminPanel.jsx   # Admin interface
+├── stores/              # Zustand stores
+│   └── authStore.js     # Authentication state
+├── services/            # API services
+│   └── api.js           # Axios configuration
+├── App.jsx              # Main app component
+└── main.jsx             # Entry point
 ```
 
-## 🔐 Authentication System
+## 🎨 Key Components
 
-### User Types
-- **Customer** - Can search and book movers
-- **Mover** - Can provide moving services
-- **Admin** - System administration
+### Authentication System
+- **Login/Register** - Clean forms with validation
+- **Password Reset** - Email-based password recovery
+- **Protected Routes** - Route guards for authenticated users
+- **Role-based Access** - Admin-only routes and features
 
-### Auth Features
-- Registration for customers and movers
-- JWT-based authentication
-- Protected routes based on user type
-- Persistent login state
-- Automatic token refresh
+### Dashboard Layout
+- **Responsive Sidebar** - Collapsible navigation with icons
+- **User Menu** - Profile dropdown with logout
+- **Breadcrumbs** - Navigation context
+- **Search** - Global search functionality
 
-### Usage Example
-```jsx
-import { useAuth } from './contexts/AuthContext';
+### Widget Editor
+- **Visual Editor** - WYSIWYG interface with live preview
+- **Device Preview** - Desktop, tablet, mobile views
+- **Targeting Builder** - Advanced targeting rule configuration
+- **Content Management** - Rich text editing and media upload
+- **Form Builder** - Dynamic form field creation
 
-function MyComponent() {
-  const { user, isAuthenticated, login, logout } = useAuth();
-  
-  if (!isAuthenticated) {
-    return <LoginForm onLogin={login} />;
-  }
-  
-  return <Dashboard user={user} onLogout={logout} />;
-}
-```
+### Analytics Dashboard
+- **Interactive Charts** - Line, area, and pie charts
+- **Real-time Metrics** - Live performance data
+- **Filtering** - Date range and widget filtering
+- **Export Options** - Data export functionality
 
-## 🛣️ Routing Structure
-
-| Route | Access | Description |
-|-------|--------|-------------|
-| `/` | Public | Landing page |
-| `/login` | Public | User login |
-| `/register` | Public | User registration |
-| `/search` | Public | Search movers |
-| `/dashboard` | Customer | Customer dashboard |
-| `/mover/dashboard` | Mover | Mover dashboard |
-| `/profile` | Auth | Profile settings |
-| `/bookings/:id` | Auth | Booking details |
-
-## 🔧 API Services
-
-### Authentication
-```javascript
-import { authService } from './services';
-
-// Login
-const response = await authService.login(email, password, userType);
-
-// Register
-const response = await authService.registerUser(userData);
-
-// Get current user
-const user = await authService.getCurrentUser();
-```
-
-### Movers
-```javascript
-import { moversService } from './services';
-
-// Search movers
-const movers = await moversService.searchMovers({
-  zipCode: '78701',
-  services: ['local-moving'],
-  maxPrice: 150
-});
-
-// Get mover details
-const mover = await moversService.getMover(moverId);
-```
-
-### Bookings
-```javascript
-import { bookingsService } from './services';
-
-// Create booking
-const booking = await bookingsService.createBooking(bookingData);
-
-// Get user bookings
-const bookings = await bookingsService.getUserBookings();
-```
-
-## 🎨 Component Examples
-
-### Protected Route
-```jsx
-<ProtectedRoute allowedUserTypes={['customer']}>
-  <Dashboard />
-</ProtectedRoute>
-```
-
-### Search Filters
-```jsx
-<SearchMovers 
-  initialFilters={{ zipCode: '78701' }}
-  onMoverSelect={(mover) => navigate(`/movers/${mover.id}`)}
-/>
-```
-
-### Authentication Context
-```jsx
-<AuthProvider>
-  <Router>
-    <App />
-  </Router>
-</AuthProvider>
-```
+### Billing Integration
+- **Stripe Checkout** - Seamless payment processing
+- **Subscription Management** - Plan upgrades and cancellations
+- **Usage Tracking** - Current plan limits and usage
+- **Billing History** - Invoice management
 
 ## 🔧 Configuration
 
-### Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `VITE_API_URL` | Backend API URL | Yes |
-| `VITE_APP_NAME` | Application name | No |
-| `VITE_APP_VERSION` | App version | No |
-
-### Tailwind Theme
-Custom color palette defined in `tailwind.config.js`:
-- **Primary**: Blue shades for main UI elements
-- **Red**: Accent colors for CTAs
-- **Dark**: Various gray shades
-
-## 📱 Features Implemented
-
-### ✅ Core Features
-- [x] Responsive landing page
-- [x] User authentication (login/register)
-- [x] Protected routing system
-- [x] Customer dashboard
-- [x] Mover search with filters
-- [x] Navigation with auth state
-- [x] API service layer
-- [x] Error handling
-
-### 🚧 In Progress
-- [ ] Booking creation flow
-- [ ] Payment integration
-- [ ] Real-time messaging
-- [ ] Photo uploads
-- [ ] Review system
-- [ ] Mover dashboard
-
-### 📋 Planned Features
-- [ ] Advanced search filters
-- [ ] Map integration
-- [ ] Push notifications
-- [ ] Mobile app (React Native)
-- [ ] Admin dashboard
-
-## 🛠️ Development
-
-### Available Scripts
-```bash
-# Development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
+### API Integration
+The app connects to the Visitor2Buy backend API:
+```javascript
+// src/services/api.js
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 ```
 
-### Code Style
-- ES6+ JavaScript
-- Functional components with hooks
-- TailwindCSS for styling
-- Component-based architecture
+### State Management
+Global state is managed with Zustand:
+```javascript
+// Authentication state
+const { user, login, logout } = useAuthStore();
+```
+
+### Routing
+React Router v7 with protected routes:
+```javascript
+// Protected route wrapper
+const ProtectedRoute = ({ children }) => {
+  const { user } = useAuthStore();
+  return user ? children : <Navigate to="/login" />;
+};
+```
+
+## 🎯 Features by Page
+
+### Landing Page (`/`)
+- Hero section with value proposition
+- Feature highlights with animations
+- Testimonials and social proof
+- Pricing overview
+- Call-to-action sections
+
+### Dashboard (`/dashboard`)
+- Performance metrics overview
+- Recent activity feed
+- Quick action buttons
+- Charts and analytics summary
+- Subscription status
+
+### Projects (`/projects`)
+- Project listing with search/filter
+- Create new project modal
+- Embed code generation
+- Project settings management
+- Usage statistics
+
+### Widgets (`/widgets`)
+- Widget gallery with filtering
+- Widget status management
+- Duplicate and delete actions
+- Performance metrics per widget
+- Quick edit access
+
+### Widget Editor (`/widgets/new`, `/widgets/:id/edit`)
+- Tabbed interface (Design, Content, Targeting, Settings, Schedule)
+- Real-time preview with device switching
+- Color picker and typography controls
+- Button and form builders
+- Advanced targeting rules
+- Scheduling options
+
+### Analytics (`/analytics`)
+- Comprehensive performance dashboard
+- Interactive charts (impressions, clicks, conversions)
+- Device breakdown analysis
+- Top performing widgets
+- Real-time activity feed
+- Export capabilities
+
+### Settings (`/settings`)
+- Profile management with avatar upload
+- Password change functionality
+- Notification preferences
+- Privacy and data controls
+- Account deletion option
+
+### Billing (`/billing`)
+- Current subscription overview
+- Usage limits and tracking
+- Stripe integration for upgrades
+- Billing history access
+- Subscription management
+
+### Admin Panel (`/admin`)
+- System-wide analytics
+- User management with actions
+- Revenue and growth metrics
+- Recent activity monitoring
+- User search and filtering
+
+## 🎨 Design System
+
+### Colors
+- **Primary**: Blue (#3B82F6)
+- **Secondary**: Gray (#6B7280)
+- **Success**: Green (#10B981)
+- **Warning**: Yellow (#F59E0B)
+- **Error**: Red (#EF4444)
+
+### Typography
+- **Font Family**: Inter (Google Fonts)
+- **Headings**: Bold weights (600-800)
+- **Body**: Regular (400) and Medium (500)
+- **Small Text**: Light (300) for secondary info
+
+### Components
+- **Buttons**: Primary, secondary, and outline variants
+- **Forms**: Consistent styling with validation states
+- **Cards**: Clean borders with subtle shadows
+- **Modals**: Centered overlays with backdrop blur
+
+## 🚀 Performance Optimizations
+
+- **Code Splitting** - Route-based lazy loading
+- **Image Optimization** - Responsive images with lazy loading
+- **Bundle Analysis** - Vite bundle analyzer for optimization
+- **Caching** - API response caching with Axios
+- **Debouncing** - Search input debouncing
+
+## 🔒 Security Features
+
+- **JWT Token Management** - Secure token storage and refresh
+- **Route Protection** - Authentication and role-based guards
+- **Input Validation** - Client-side form validation
+- **XSS Protection** - Sanitized user inputs
+- **CSRF Protection** - API request tokens
+
+## 📱 Responsive Design
+
+- **Mobile First** - Designed for mobile, enhanced for desktop
+- **Breakpoints**: 
+  - Mobile: < 768px
+  - Tablet: 768px - 1024px
+  - Desktop: > 1024px
+- **Touch Friendly** - Large tap targets and gestures
+- **Progressive Enhancement** - Works on all devices
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run E2E tests
+npm run test:e2e
+```
 
 ## 🚀 Deployment
 
@@ -268,35 +285,74 @@ npm run lint
 npm run build
 ```
 
-### Environment Setup
-1. Set production API URL
-2. Configure environment variables
-3. Build and deploy to hosting platform
+### Environment Variables for Production
+```env
+VITE_API_URL=https://api.visitor2buy.com/api
+VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_live_key
+VITE_NODE_ENV=production
+```
 
-### Hosting Recommendations
-- **Vercel** - Easy deployment from Git
-- **Netlify** - Great for static sites
-- **AWS S3 + CloudFront** - Scalable solution
+### Deployment Platforms
+- **Vercel** - Recommended for React apps
+- **Netlify** - Great for static sites with forms
+- **AWS S3 + CloudFront** - Scalable static hosting
+- **Docker** - Containerized deployment
 
-## 🔗 Integration with Backend
+### Docker Deployment
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "preview"]
+```
 
-The frontend communicates with the BooknMove backend API:
-- Base URL: `http://localhost:5000/api`
-- Authentication: JWT tokens
-- Content-Type: `application/json`
+## 🔄 API Integration
 
-### API Endpoints Used
-- `POST /auth/login` - User authentication
-- `POST /auth/register/user` - Customer registration
-- `POST /auth/register/mover` - Mover registration
-- `GET /movers/search` - Search movers
-- `POST /bookings` - Create booking
-- `GET /users/me/bookings` - Get user bookings
+### Authentication Flow
+1. User logs in with credentials
+2. Backend returns JWT token
+3. Token stored in localStorage
+4. Token included in all API requests
+5. Automatic logout on token expiration
 
-## 📝 Next Steps
+### Error Handling
+- Global error interceptor for API calls
+- User-friendly error messages
+- Retry logic for failed requests
+- Offline detection and handling
 
-1. **Complete Authentication Integration** - Connect login/register to backend
-2. **Implement Booking Flow** - Full booking creation process
-3. **Add Payment Processing** - Stripe integration
-4. **Build Mover Dashboard** - Complete mover interface
-5. **Add Real-time Features** - Live chat and notifications
+### Data Flow
+1. User actions trigger API calls
+2. Loading states shown during requests
+3. Success/error notifications displayed
+4. Global state updated with new data
+5. UI re-renders with updated information
+
+## 🎯 Future Enhancements
+
+- **Dark Mode** - Theme switching capability
+- **Internationalization** - Multi-language support
+- **PWA Features** - Offline functionality and push notifications
+- **Advanced Charts** - More visualization options
+- **Collaboration** - Team features and sharing
+- **A/B Testing** - Built-in testing framework
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support, email support@visitor2buy.com or create an issue in the repository.
