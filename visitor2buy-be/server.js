@@ -5,20 +5,33 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 // Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+const projectRoutes = require('./routes/projects');
+const widgetRoutes = require('./routes/widgets');
 const campaignRoutes = require('./routes/campaigns');
 const analyticsRoutes = require('./routes/analytics');
 const contactRoutes = require('./routes/contact');
 const uploadRoutes = require('./routes/upload');
+const embedRoutes = require('./routes/embed');
+const paymentRoutes = require('./routes/payments');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet());
+app.use(compression());
+app.use(mongoSanitize());
+app.use(xss());
+app.use(hpp());
 
 // Rate limiting
 const limiter = rateLimit({
@@ -61,10 +74,17 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/widgets', widgetRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Embed routes (public)
+app.use('/', embedRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

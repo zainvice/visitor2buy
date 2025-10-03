@@ -1,6 +1,7 @@
 const express = require('express');
 const Analytics = require('../models/Analytics');
-const Campaign = require('../models/Campaign');
+const Widget = require('../models/Widget');
+const Project = require('../models/Project');
 const { auth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -11,40 +12,49 @@ const router = express.Router();
 router.post('/track', async (req, res) => {
   try {
     const {
-      campaignId,
+      widgetId,
+      projectId,
       event,
       sessionId,
       visitor,
-      metadata
+      metadata,
+      formData,
+      value
     } = req.body;
 
     // Validate required fields
-    if (!campaignId || !event || !sessionId) {
+    if (!widgetId || !projectId || !event || !sessionId) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Find campaign and get user
-    const campaign = await Campaign.findById(campaignId);
-    if (!campaign) {
-      return res.status(404).json({ message: 'Campaign not found' });
+    // Find widget and project
+    const widget = await Widget.findById(widgetId);
+    const project = await Project.findById(projectId);
+    
+    if (!widget || !project) {
+      return res.status(404).json({ message: 'Widget or project not found' });
     }
 
     // Create analytics record
     const analyticsRecord = new Analytics({
-      campaign: campaignId,
-      user: campaign.user,
+      widget: widgetId,
+      project: projectId,
+      user: widget.user,
       event,
       visitor: {
         sessionId,
         ...visitor
       },
-      metadata: metadata || {}
+      metadata: metadata || {},
+      formData: formData || {},
+      value: value || 0
     });
 
     await analyticsRecord.save();
 
-    // Update campaign analytics
-    await updateCampaignAnalytics(campaignId, event);
+    // Update widget and project analytics
+    await updateWidgetAnalytics(widgetId, event);
+    await updateProjectAnalytics(projectId, event);
 
     res.status(201).json({ message: 'Event tracked successfully' });
   } catch (error) {
@@ -53,22 +63,22 @@ router.post('/track', async (req, res) => {
   }
 });
 
-// @route   GET /api/analytics/campaigns/:id
-// @desc    Get analytics for specific campaign
+// @route   GET /api/analytics/widgets/:id
+// @desc    Get analytics for specific widget
 // @access  Private
-router.get('/campaigns/:id', auth, async (req, res) => {
+router.get('/widgets/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
     const { startDate, endDate, groupBy = 'day' } = req.query;
 
-    // Verify campaign ownership
-    const campaign = await Campaign.findOne({
+    // Verify widget ownership
+    const widget = await Widget.findOne({
       _id: id,
       user: req.user.id
     });
 
-    if (!campaign) {
-      return res.status(404).json({ message: 'Campaign not found' });
+    if (!widget) {
+      return res.status(404).json({ message: 'Widget not found' });
     }
 
     // Build date filter
@@ -77,7 +87,7 @@ router.get('/campaigns/:id', auth, async (req, res) => {
     if (endDate) dateFilter.$lte = new Date(endDate);
 
     const matchStage = {
-      campaign: campaign._id
+      widget: widget._id
     };
 
     if (Object.keys(dateFilter).length > 0) {
@@ -150,11 +160,11 @@ router.get('/campaigns/:id', auth, async (req, res) => {
     res.json({
       analytics,
       summary: stats,
-      campaign: {
-        id: campaign._id,
-        name: campaign.name,
-        type: campaign.type,
-        status: campaign.status
+      widget: {
+        id: widget._id,
+        name: widget.name,
+        type: widget.type,
+        status: widget.status
       }
     });
   } catch (error) {
@@ -188,15 +198,15 @@ router.get('/dashboard', auth, async (req, res) => {
         startDate.setDate(startDate.getDate() - 30);
     }
 
-    // Get user's campaigns
-    const campaigns = await Campaign.find({ user: req.user.id });
-    const campaignIds = campaigns.map(c => c._id);
+    // Get user's widgets
+    const widgets = await Widget.find({ user: req.user.id });
+    const widgetIds = widgets.map(w => w._id);
 
-    if (campaignIds.length === 0) {
+    if (widgetIds.length === 0) {
       return res.json({
         summary: {
-          totalCampaigns: 0,
-          activeCampaigns: 0,
+          totalWidgets: 0,
+          activeWidgets: 0,
           totalImpressions: 0,
           totalClicks: 0,
           totalConversions: 0,
@@ -204,7 +214,7 @@ router.get('/dashboard', auth, async (req, res) => {
           averageConversionRate: 0
         },
         chartData: [],
-        topCampaigns: []
+        topWidgets: []
       });
     }
 
@@ -212,7 +222,7 @@ router.get('/dashboard', auth, async (req, res) => {
     const summary = await Analytics.aggregate([
       {
         $match: {
-          campaign: { $in: campaignIds },
+          widget: { $in: widgetIds },
           timestamp: { $gte: startDate, $lte: endDate }
         }
       },
@@ -330,39 +340,35 @@ router.get('/dashboard', auth, async (req, res) => {
   }
 });
 
-// Helper function to update campaign analytics
-async function updateCampaignAnalytics(campaignId, event) {
+// Helper function to update widget analytics
+async function updateWidgetAnalytics(widgetId, event) {
   try {
-    const campaign = await Campaign.findById(campaignId);
-    if (!campaign) return;
+    const widget = await Widget.findById(widgetId);
+    if (!widget) return;
 
-    switch (event) {
-      case 'impression':
-        campaign.analytics.impressions += 1;
-        break;
-      case 'click':
-        campaign.analytics.clicks += 1;
-        break;
-      case 'conversion':
-        campaign.analytics.conversions += 1;
-        break;
-      case 'submission':
-        campaign.analytics.submissions += 1;
-        break;
-    }
-
-    // Recalculate rates
-    if (campaign.analytics.impressions > 0) {
-      campaign.analytics.ctr = (campaign.analytics.clicks / campaign.analytics.impressions) * 100;
-    }
-    
-    if (campaign.analytics.clicks > 0) {
-      campaign.analytics.conversionRate = (campaign.analytics.conversions / campaign.analytics.clicks) * 100;
-    }
-
-    await campaign.save();
+    const updateField = `analytics.${event}s`;
+    await Widget.findByIdAndUpdate(widgetId, {
+      $inc: { [updateField]: 1 },
+      'analytics.lastShown': new Date()
+    });
   } catch (error) {
-    console.error('Update campaign analytics error:', error);
+    console.error('Update widget analytics error:', error);
+  }
+}
+
+// Helper function to update project analytics
+async function updateProjectAnalytics(projectId, event) {
+  try {
+    const project = await Project.findById(projectId);
+    if (!project) return;
+
+    const updateField = `analytics.total${event.charAt(0).toUpperCase() + event.slice(1)}s`;
+    await Project.findByIdAndUpdate(projectId, {
+      $inc: { [updateField]: 1 },
+      'analytics.lastActivity': new Date()
+    });
+  } catch (error) {
+    console.error('Update project analytics error:', error);
   }
 }
 
