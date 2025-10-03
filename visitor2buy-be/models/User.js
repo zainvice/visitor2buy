@@ -58,8 +58,16 @@ const userSchema = new mongoose.Schema({
   subscription: {
     plan: {
       type: String,
-      enum: ['free', 'basic', 'premium', 'enterprise'],
+      enum: ['free', 'pro'],
       default: 'free'
+    },
+    stripeCustomerId: {
+      type: String,
+      default: ''
+    },
+    stripeSubscriptionId: {
+      type: String,
+      default: ''
     },
     startDate: {
       type: Date,
@@ -71,6 +79,32 @@ const userSchema = new mongoose.Schema({
     isActive: {
       type: Boolean,
       default: true
+    },
+    limits: {
+      widgets: {
+        type: Number,
+        default: function() {
+          return this.subscription.plan === 'free' ? 3 : -1; // -1 means unlimited
+        }
+      },
+      projects: {
+        type: Number,
+        default: function() {
+          return this.subscription.plan === 'free' ? 1 : -1;
+        }
+      },
+      pageViews: {
+        type: Number,
+        default: function() {
+          return this.subscription.plan === 'free' ? 1000 : -1;
+        }
+      },
+      removeBranding: {
+        type: Boolean,
+        default: function() {
+          return this.subscription.plan !== 'free';
+        }
+      }
     }
   },
   preferences: {

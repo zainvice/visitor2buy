@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 
 const analyticsSchema = new mongoose.Schema({
-  campaign: {
+  widget: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Campaign',
+    ref: 'Widget',
+    required: true
+  },
+  project: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
     required: true
   },
   user: {
@@ -13,7 +18,7 @@ const analyticsSchema = new mongoose.Schema({
   },
   event: {
     type: String,
-    enum: ['impression', 'click', 'conversion', 'submission', 'close'],
+    enum: ['impression', 'click', 'conversion', 'submission', 'close', 'form_start', 'form_abandon'],
     required: true
   },
   visitor: {
@@ -38,6 +43,14 @@ const analyticsSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     default: {}
   },
+  value: {
+    type: Number,
+    default: 0 // For conversion tracking - monetary value
+  },
+  formData: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {} // Store form submission data
+  },
   timestamp: {
     type: Date,
     default: Date.now
@@ -47,9 +60,11 @@ const analyticsSchema = new mongoose.Schema({
 });
 
 // Indexes for better query performance
-analyticsSchema.index({ campaign: 1, event: 1, timestamp: -1 });
+analyticsSchema.index({ widget: 1, event: 1, timestamp: -1 });
+analyticsSchema.index({ project: 1, event: 1, timestamp: -1 });
 analyticsSchema.index({ user: 1, timestamp: -1 });
 analyticsSchema.index({ 'visitor.sessionId': 1 });
 analyticsSchema.index({ timestamp: -1 });
+analyticsSchema.index({ event: 1, timestamp: -1 });
 
 module.exports = mongoose.model('Analytics', analyticsSchema);
